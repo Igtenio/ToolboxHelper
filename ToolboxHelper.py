@@ -2,9 +2,14 @@
 # TODO for Me
 # Change NTP function in on_set_ntp_server_clicked to both enable and set servers
 # GUI tweaks.
-# Maybe get an icon made up in Paint. Mmmm, Paint, joining the ranks of Nerds and Cheerios as "Art and Food, unfortunately".
-# It's like 1:33am.
-# Fucking clean up this mess for production. Jesus Christ.
+# Maybe get an icon made up in Paint.
+# It's like 1:33am. I hadn't learned PyGObject before this. As someone who'll inevitably learn something that'll doom myself //
+# // and/or humanity in my thirst for knowledge, I was okay not knowing this. Some men build time machines to meet people. Some //
+# // do it to save lost loves. I want to do it to tell Past-Gary to just tell Heath it sounds like a great time to learn BASH //
+# // script programming himself versus volunteering for this. I guess what I'm saying is that I don't regret this, but if the //
+# // choice was continuing to exist in this state or causing the sun to go supernova in an attept to gravity swing with a bunch //
+# // of whales I stole from San Francisco, I'd invest in krill stocks because Nemo and Bessie gotta pack a few lunches.
+# Fucking clean up this mess for production. Oy vey.
 # Probably remove some of these notes so a million billion servers aren't burning with my vulgarity. Or don't. I don't know, I'm not a doctor.
 # TODO for Tony
 # Continue to show infinite patience upon a poor SENG like me. Galileo Galileo figuro.
