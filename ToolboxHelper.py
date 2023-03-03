@@ -49,22 +49,26 @@ class ToolboxHelper(Gtk.Window):
         self.status_label = Gtk.Label()
         self.grid.attach(self.status_label, 1, 1, 1, 1)
         
-        self.ntp_server_label = Gtk.Label("NTP Server:")
-        self.grid.attach(self.ntp_server_label, 0, 2, 1, 1)
+#        self.ntp_server_label = Gtk.Label("NTP Server:")
+#        self.grid.attach(self.ntp_server_label, 0, 2, 1, 1)
         
-        self.ntp_server_entry = Gtk.Entry()
-        self.ntp_server_entry.set_text(ntp_server)
-        self.grid.attach(self.ntp_server_entry, 1, 2, 1, 1)
+#        self.ntp_server_entry = Gtk.Entry()
+#        self.ntp_server_entry.set_text(ntp_server)
+#        self.grid.attach(self.ntp_server_entry, 1, 2, 1, 1)
         
-        self.set_ntp_server_button = Gtk.Button(label="Set NTP Server")
-        self.set_ntp_server_button.connect("clicked", self.on_set_ntp_server_clicked)
-        self.grid.attach(self.set_ntp_server_button, 0, 3, 2, 1)
+#        self.set_ntp_server_button = Gtk.Button(label="Set NTP Server")
+#        self.set_ntp_server_button.connect("clicked", self.on_set_ntp_server_clicked)
+#        self.grid.attach(self.set_ntp_server_button, 0, 3, 2, 1)
         
         self.show_all()
         
         self.disable_until = 0
-        GLib.timeout_add_seconds(1, self.check_shutdown_time)
-        
+        GLib.timeout_add_seconds(1, self.set_shutdown_time)
+        cstoutput = self.check_shutdown_time()
+        print(cstoutput)
+        if cstoutput == False:
+            exit()
+
     def on_disable_clicked(self, widget):
 #       I don't like this, makes it require the program to run. Easier to just set the
 #       shutdown time via Linux, and also limits it to a 24 hour period.
@@ -77,14 +81,14 @@ class ToolboxHelper(Gtk.Window):
 #        if len(self.shutdown_time_hour) == 0: self.shutdown_time_hour = "00"
 #        if len(self.shutdown_time_hour) == 1: self.shutdown_time_hour = "0" + shutdown_time_hour
         self.shutdown_time_entry.set_text(str(shutdown_time_hour) + ":" + shutdown_time_min)
-        self.check_shutdown_time()
+        self.set_shutdown_time()
         
     def on_set_ntp_server_clicked(self, widget):
-        ntp_server = self.ntp_server_entry.get_text()
+        ntp_server = str(self.ntp_server_entry.get_text())
         subprocess.run(["timedatectl", "set-ntp", ntp_server])
         self.status_label.set_text("NTP server set to " + ntp_server)
         
-    def check_shutdown_time(self):
+    def set_shutdown_time(self):
 #       v2 Changes
 #        current_time = time.localtime()
 #        shutdown_time = time.strptime(self.shutdown_time_entry.get_text(), '%H:%M')
@@ -96,6 +100,33 @@ class ToolboxHelper(Gtk.Window):
         subprocess.run(["shutdown", "-c"])
 #        time.sleep(3)
         subprocess.run(["shutdown", "-P", str(shutdown_time_hour) + ":" + shutdown_time_min])
+    
+    def check_shutdown_time(self):
+        # Run the command to get the scheduled shutdown time
+        try:
+            output = subprocess.check_output("date --date @$(head -1 /run/systemd/shutdown/scheduled |cut -c6-15)", shell=True)
+        except subprocess.CalledProcessError:
+            self.status_label.set_text("Failed to get scheduled shutdown time")
+            self.set_shutdown_time()
+            return False
+        
+        # Parse the output to get the scheduled shutdown hour
+        scheduled_hour = int(output.decode("utf-8").strip().split()[4].split(":")[0])
+        print(scheduled_hour)
+        
+        # Check if the scheduled shutdown hour is one of the valid ones
+        if scheduled_hour == 6:
+            return True
+        elif scheduled_hour == 12:
+            return True
+        elif scheduled_hour == 18:
+            return True
+        elif scheduled_hour == 0:
+            return True
+        else:
+            self.status_label.set_text("Scheduled shutdown time is not valid")
+            self.set_shutdown_time()
+            return False
 
 win = ToolboxHelper()
 win.connect("destroy", Gtk.main_quit)
