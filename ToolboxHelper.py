@@ -111,7 +111,7 @@ class ToolboxHelper(Gtk.Window):
             return False
         
         # Parse the output to get the scheduled shutdown hour
-        scheduled_hour = int(output.decode("utf-8").strip().split()[4].split(":")[0])
+        scheduled_hour = int(output.decode("utf-8").strip().split()[3].split(":")[0])
         print(scheduled_hour)
         
         # Check if the scheduled shutdown hour is one of the valid ones
